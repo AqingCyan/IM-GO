@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"net"
 	"strings"
 )
@@ -110,6 +111,12 @@ func (u *User) ListenMessage() {
 	for {
 		msg := <-u.C
 
-		u.conn.Write([]byte(msg + "\n"))
+		_, err := u.conn.Write([]byte(msg + "\n"))
+
+		// 这里的错误需要处理一下，不然被服务超时踢掉后，该 conn 还在尝试往里写数据，会报错，且不会退出，导致 CPU 占用过高
+		if err != nil {
+			fmt.Println("用户被踢，该用户管道需要关闭", err)
+			return
+		}
 	}
 }

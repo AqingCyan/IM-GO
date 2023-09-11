@@ -63,4 +63,4 @@ go build -o client client.go
 ```
 菜单功能
 
-<img src="https://s2.loli.net/2023/09/11/zNv6uSAjQmro3LH.png" alt="menu">
+<img src="https://s2.loli.net/2023/09/11/zNv6uSAjQmro3LH.png" width="500" alt="menu">

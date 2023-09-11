@@ -1,11 +1,13 @@
 package main
 
 import (
+	"bufio"
 	"flag"
 	"fmt"
-	"io"
+	"log"
 	"net"
 	"os"
+	"strings"
 )
 
 type Client struct {
@@ -33,10 +35,22 @@ func NewClient(serverIp string, serverPort int) *Client {
 	return client
 }
 
-// DealResponse 处理 server 回应的消息，直接显示到标准输出即可
+// DealResponse 处理 server 回应的消息，直接显示到终端即可
 func (c *Client) DealResponse() {
-	// 一旦 c.conn 有数据，就直接 copy 到 stdout 标准输出上，永久阻塞监听
-	io.Copy(os.Stdout, c.conn)
+	reader := bufio.NewReader(c.conn)
+	for {
+		message, err := reader.ReadString('\n')
+		if err != nil {
+			log.Fatalf("Failed to read from server: %v", err)
+		}
+
+		if strings.TrimSpace(message) == "你被踢了" {
+			fmt.Println("你被踢了")
+			os.Exit(1)
+		}
+
+		fmt.Print(message)
+	}
 }
 
 // menu 菜单选择
@@ -59,6 +73,27 @@ func (c *Client) menu() bool {
 	}
 }
 
+// PublicChat 公聊模式
+func (c *Client) PublicChat() {
+	var chatMsg string
+
+	fmt.Println(">>>>>> 请输入聊天内容，exit 退出：")
+	fmt.Scanln(&chatMsg)
+
+	for chatMsg != "exit" {
+		_, err := c.conn.Write([]byte(chatMsg + "\n"))
+		if err != nil {
+			fmt.Println("conn.Write err:", err)
+			break
+		}
+
+		chatMsg = ""
+		fmt.Println(">>>>>> 请输入聊天内容，exit 退出：")
+		fmt.Scanln(&chatMsg)
+	}
+}
+
+// UpdateName 更新用户名
 func (c *Client) UpdateName() bool {
 	fmt.Println(">>>>>> 请输入用户名：")
 	fmt.Scanln(&c.Name)
@@ -80,14 +115,13 @@ func (c *Client) Run() {
 		// 根据不同的模式处理不同的业务
 		switch c.flag {
 		case 1:
-			// 公聊模式
+			c.PublicChat() // 公聊模式
 			break
 		case 2:
 			// 私聊模式
 			break
 		case 3:
-			// 更新用户名
-			c.UpdateName()
+			c.UpdateName() // 更新用户名
 			break
 		}
 	}
