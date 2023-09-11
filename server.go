@@ -5,6 +5,7 @@ import (
 	"io"
 	"net"
 	"sync"
+	"time"
 )
 
 type Server struct {
@@ -55,6 +56,7 @@ func (s *Server) BroadCast(user *User, msg string) {
 func (s *Server) Handler(conn net.Conn) {
 	user := NewUser(conn, s)
 	user.Online()
+	isLive := make(chan bool)
 
 	// 接收客户端发送的消息
 	go func() {
@@ -77,11 +79,29 @@ func (s *Server) Handler(conn net.Conn) {
 
 			// 用户针对 msg 进行消息处理
 			user.DoMessage(msg)
+
+			// 用户的任意消息，代表当前用户是一个活跃的用户
+			isLive <- true
 		}
 	}()
 
 	// 当前 handler 阻塞
-	select {}
+	for {
+		select {
+		case <-isLive:
+			// 当前用户是活跃的，应该重置定时器
+			// 不做任何事情，为了激活 select，更新下面的定时器
+		case <-time.After(time.Second * 10):
+			// 已经超时，将当前的 User 强制关闭
+			user.SendMsg("你被踢了\n")
+			// 销毁用的资源
+			close(user.C)
+			// 关闭连接
+			conn.Close()
+			// 退出当前的 Handler
+			return
+		}
+	}
 }
 
 // Start 启动服务器的接口
