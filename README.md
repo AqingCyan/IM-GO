@@ -16,6 +16,10 @@
 
 <img src="https://s2.loli.net/2023/09/11/BpxeWyM812qlmz5.png" width="500" alt="rename">
 
-不活跃用户，超 10 秒强踢
+不活跃用户，超 5 分钟强踢
 
 <img src="https://s2.loli.net/2023/09/11/DcgZYlh6UOWHRV2.png" width="500" alt="timeout">
+
+私聊用户
+
+<img src="https://s2.loli.net/2023/09/11/KpNoke26ODg9UIa.png" width="500" alt="oneToOne">
