@@ -112,6 +112,7 @@ func (s *Server) Start() {
 		fmt.Println("net.Listen err:", err)
 		return
 	}
+	fmt.Println("服务器启动成功，等待连接...")
 
 	// close listen socket
 	defer listener.Close()

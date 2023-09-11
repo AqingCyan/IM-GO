@@ -53,3 +53,14 @@ go build -o client client.go
 私聊用户
 
 <img src="https://s2.loli.net/2023/09/11/KpNoke26ODg9UIa.png" width="500" alt="oneToOne">
+
+## Client 使用
+
+登录服务
+
+```shell
+./client -ip 127.0.0.1 -port 8888
+```
+菜单功能
+
+<img src="https://s2.loli.net/2023/09/11/zNv6uSAjQmro3LH.png" alt="menu">
